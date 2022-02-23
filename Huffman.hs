@@ -1,11 +1,12 @@
 module Huffman {-(statistics, maketree, encode, decode, Htree)-} where
 import Data.Ord (comparing)
-import Data.List (find, delete)
+import Data.List (find, delete, sortBy)
 import Data.Maybe (isJust, fromJust)
 import Distribution.Simple.Program.HcPkg (list)
 import Data.Char(intToDigit)
 
 import GHC.Char
+import Data.Function
 
 data Htree = Leaf Char | Branch Htree Htree
 
@@ -43,6 +44,26 @@ findTuple c = find (\(_,x) -> x == c)
 -- MakeTree --------------------------------------------------------------------------------------------
 maketree :: [(Integer, Char)] -> Htree
 maketree [_] = error "Not Implemented Yet"
+
+
+-- CONFIRMED --
+sortList :: [(Integer, Char)] -> [(Integer, Char)]
+sortList = sortBy (comparing fst)
+
+-- //TODO -- makeWtree
+makeWtree :: [Wtree] -> Wtree
+makeWtree [root] = root
+--makeWtree list = makeWtree
+
+
+-- //TODO -- generateWtreeList
+generateWtreeList :: [(Integer, Char)] -> [Wtree] -> [Wtree]
+generateWtreeList [] wTreeList = wTreeList
+generateWtreeList ((i,c):rest) wTreeList = L i c : wTreeList
+
+
+
+
 
 
 -- //TODO Encode
