@@ -1,0 +1,17 @@
+Branch {h0 = Branch {h0 = Branch {h0 = Leaf {c = 'a'}, h1 = Leaf {c = 'H'}}, h1 = Branch {h0 = Leaf {c = 'f'}, h1 = Branch {h0 = Leaf {c = 'u'}, h1 = Leaf {c = 's'}}}}, h1 = Leaf {c = 'n'}}
+statistics "Huffsannnnnnnnn"
+Branch {
+    h0 = Branch {
+        h0 = Branch {
+            h0 = Leaf {c = 'a'}
+            h1 = Leaf {c = 'H'}}
+        h1 = Branch {
+            h0 = Leaf {c = 'f'} 
+            h1 = Branch {
+                h0 = Leaf {c = 'u'}
+                h1 = Leaf {c = 's'}
+            }
+        }
+    }
+    h1 = Leaf {c = 'n'}
+}

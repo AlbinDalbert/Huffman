@@ -1,16 +1,22 @@
 module Huffman {-(statistics, maketree, encode, decode, Htree)-} where
 import Data.Ord (comparing)
-import Data.List (find, delete, sortBy)
+import Data.List (find, delete, sortBy, sortOn)
 import Data.Maybe (isJust, fromJust)
 import Distribution.Simple.Program.HcPkg (list)
 import Data.Char(intToDigit)
 
-import GHC.Char
-import Data.Function
+import GHC.Char ( chr )
+import Data.Function ()
+import Data.Vector (create)
+import Distribution.Compat.Lens (getting)
+import Control.Monad (when)
+import Data.Tree 
+import Text.Show
 
-data Htree = Leaf Char | Branch Htree Htree
+data Htree = Leaf {c :: Char} | Branch {h0 :: Htree, h1 :: Htree} deriving (Show, Read, Eq)
 
-data Wtree = L Integer Char | B Integer Wtree Wtree
+
+data Wtree = L {weight :: Integer, cha :: Char} | B {weight :: Integer, t1 :: Wtree, t2 :: Wtree}
 
 -- COMPLETED --
 -- Statistics -----------------------------------------------------------------------------
@@ -40,31 +46,52 @@ findTuple :: Char -> [(Integer, Char)] -> Maybe (Integer, Char)
 findTuple c = find (\(_,x) -> x == c)
 
 
--- //TODO MakeTree
 -- MakeTree --------------------------------------------------------------------------------------------
 maketree :: [(Integer, Char)] -> Htree
-maketree [_] = error "Not Implemented Yet"
-
+maketree list = wtreeToHtree ( makeWtree (generateWtreeList list []))
 
 -- CONFIRMED --
-sortList :: [(Integer, Char)] -> [(Integer, Char)]
-sortList = sortBy (comparing fst)
+--sortList :: [(Integer, Char)] -> [(Integer, Char)]
+--sortList = sortBy (comparing fst)
 
--- //TODO -- makeWtree
+zipLeafAndWeight :: [Wtree] -> [Integer] -> [Char] -> [(Integer, Char)]
+zipLeafAndWeight [] inte cha = zip inte cha
+zipLeafAndWeight (x:xs) inte cha = zipLeafAndWeight xs (getTreeW x : inte) (getTreeC x : cha)
+
+
+-- CONFIRMED
 makeWtree :: [Wtree] -> Wtree
 makeWtree [root] = root
---makeWtree list = makeWtree
+makeWtree list =    if length list > 1
+                    then makeWtree (sortList (drop 2 list ++ [createWtreeOfTrees (head list) (last (take 2 list))]))
+                    else head list
 
 
--- //TODO -- generateWtreeList
+sortList :: [Wtree] -> [Wtree]
+sortList = sortOn weight
+
+
+createWtreeOfTrees :: Wtree -> Wtree -> Wtree
+createWtreeOfTrees t1 t2 = B (getTreeW t1 + getTreeW t2) t1 t2
+
+
+getTreeW :: Wtree -> Integer
+getTreeW (B weight _ _) =  weight
+getTreeW (L weight _) =  weight
+
+getTreeC :: Wtree -> Char
+-- getTreeC (B weight _ _) =  weight
+getTreeC (L _ cha) =  cha
+
+
 generateWtreeList :: [(Integer, Char)] -> [Wtree] -> [Wtree]
 generateWtreeList [] wTreeList = wTreeList
-generateWtreeList ((i,c):rest) wTreeList = L i c : wTreeList
+generateWtreeList ((i,c):rest) wTreeList = generateWtreeList rest (L i c : wTreeList)
 
 
-
-
-
+wtreeToHtree :: Wtree -> Htree 
+wtreeToHtree (L _ c) = Leaf c
+wtreeToHtree (B _ t1 t2) = Branch (wtreeToHtree t1) (wtreeToHtree t2)
 
 -- //TODO Encode
 -- Encode ------------------------------------------------------------------------------------------
