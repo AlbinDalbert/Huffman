@@ -15,3 +15,26 @@ Branch {
     }
     h1 = Leaf {c = 'n'}
 }
+
+
+
+
+Branch {
+    h0 = Branch {
+        h0 = Leaf {c = 'H'}
+        h1 = Leaf {c = 'f'}
+    }
+    h1 = Branch {
+        h0 = Branch {
+            h0 = Leaf {c = 'u'} 
+            h1 = Leaf {c = 'n'}
+        }
+        h1 = Branch {
+            h0 = Leaf {c = 'm'} 
+            h1 = Leaf {c = 'a'}
+        }
+    }
+}
+            
+            
+-- [0,0,1,0,0,0,1,0,1,1,1,0,1,1,1,1,0,1]
