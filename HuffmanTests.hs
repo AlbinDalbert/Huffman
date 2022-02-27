@@ -1,6 +1,5 @@
 module HuffmanTests () where
-import Huffman
-    ( statistics, makeWtree, getTreeW, generateWtreeList, Htree (Leaf, Branch) )
+import Huffman 
 import Debug.Trace ( trace )
 import Data.Tree
 
@@ -23,11 +22,11 @@ allTests =  trace "-----------"
 testStatistics :: Bool
 testStatistics = statistics "Huffman" == [(1,'H'),(1,'a'),(2,'f'),(1,'m'),(1,'n'),(1,'u')]
 
-Branch {h0 = Branch {h0 = Leaf {c = 'H'}, h1 = Leaf {c = 'f'}}, h1 = Branch {h0 = Branch {h0 = Leaf {c = 'u'}, h1 = Leaf {c = 'n'}}, h1 = Branch {h0 = Leaf {c = 'm'}, h1 = Leaf {c = 'a'}}}}
+-- Branch {h0 = Branch {h0 = Leaf {c = 'H'}, h1 = Leaf {c = 'f'}}, h1 = Branch {h0 = Branch {h0 = Leaf {c = 'u'}, h1 = Leaf {c = 'n'}}, h1 = Branch {h0 = Leaf {c = 'm'}, h1 = Leaf {c = 'a'}}}}
 
 
-testMakeTree :: Bool
-testMakeTree = getTreeW (makeWtree (generateWtreeList (statistics "Huffman") [])) == 7
+testWeightMakeTree :: Bool
+testWeightMakeTree = getTreeW (makeWtree (generateWtreeList (statistics "Huffman") [])) == 7
 -- stestMakeTree = maketree [(1,'H'),(1,'a'),(2,'f'),(1,'m'),(1,'n'),(1,'u')] == 
 
 -- testEncode :: Bool

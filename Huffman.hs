@@ -1,26 +1,14 @@
 {-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-module Huffman {-(statistics, maketree, encode, decode, Htree)-} where
-import Data.Ord (comparing)
+module Huffman (statistics, maketree, encode, decode, Htree) where
 import Data.List (find, delete, sortBy, sortOn)
 import Data.Maybe (isJust, fromJust)
-import Distribution.Simple.Program.HcPkg (list)
-import Data.Char(intToDigit)
-
-
 import GHC.Char ( chr )
-import Data.Function ()
-import Data.Vector (create)
-import Distribution.Compat.Lens (getting)
-import Control.Monad (when)
 import Data.Tree
-import Text.Show
-import Data.Bits (Bits(bit))
+
 
 data Htree = Leaf {c :: Char} | Branch {h0 :: Htree, h1 :: Htree} deriving (Show, Read, Eq)
-
 type BitTableElem = (Char, [Integer])
-
 data Wtree = L {weight :: Integer, cha :: Char} | B {weight :: Integer, t1 :: Wtree, t2 :: Wtree}
 
 -- COMPLETED --
@@ -55,9 +43,6 @@ findTuple c = find (\(_,x) -> x == c)
 maketree :: [(Integer, Char)] -> Htree
 maketree list = wtreeToHtree ( makeWtree (generateWtreeList list []))
 
--- CONFIRMED --
---sortList :: [(Integer, Char)] -> [(Integer, Char)]
---sortList = sortBy (comparing fst)
 
 zipLeafAndWeight :: [Wtree] -> [Integer] -> [Char] -> [(Integer, Char)]
 zipLeafAndWeight [] inte cha = zip inte cha
@@ -85,7 +70,6 @@ getTreeW (B weight _ _) =  weight
 getTreeW (L weight _) =  weight
 
 getTreeC :: Wtree -> Char
--- getTreeC (B weight _ _) =  weight
 getTreeC (L _ cha) =  cha
 
 
@@ -102,7 +86,6 @@ wtreeToHtree (B _ t1 t2) = Branch (wtreeToHtree t1) (wtreeToHtree t2)
 -- COMPLETED --
 -- Encode ------------------------------------------------------------------------------------------
 encode :: String -> (Htree , [Integer])
--- encode _ = error "Not Implemented Yet"
 encode str =    let tree = maketree (statistics str)
                 in (tree, makeBitSequence tree (makeBitTable tree []) str [])
 
@@ -128,6 +111,7 @@ getBitsForChar c ((ch, bits):rest) =    if c == ch
 decode :: Htree -> [Integer] -> String
 decode tree bits = decodeTraverse tree tree bits []
 
+
 decodeTraverse :: Htree -> Htree -> [Integer] -> String -> String
 decodeTraverse _ (Leaf c) [] str = str++[c]
 decodeTraverse root (Leaf c) bits newStr = decodeTraverse root root bits (newStr ++ [c])
@@ -140,3 +124,19 @@ decodeTemp :: (Htree, [Integer]) -> String
 decodeTemp (tree, bits) = decodeTraverse tree tree bits []
 
 
+-- Tests -------------------------------------------------------------------------------------------------------
+
+testStatistics :: Bool
+testStatistics = statistics "Huffman" == [(1,'H'),(1,'a'),(2,'f'),(1,'m'),(1,'n'),(1,'u')]
+
+
+testWeightMakeTree :: Bool
+testWeightMakeTree = getTreeW (makeWtree (generateWtreeList (statistics "Huffman") [])) == 7
+
+
+testMakeTree :: Bool
+testMakeTree = show (maketree (statistics "Huffman")) == "Branch {h0 = Branch {h0 = Leaf {c = 'H'}, h1 = Leaf {c = 'f'}}, h1 = Branch {h0 = Branch {h0 = Leaf {c = 'u'}, h1 = Leaf {c = 'n'}}, h1 = Branch {h0 = Leaf {c = 'm'}, h1 = Leaf {c = 'a'}}}}"
+
+
+testEncodeAndDecode :: Bool
+testEncodeAndDecode = uncurry decode (encode "Huffman") == "Huffman"
