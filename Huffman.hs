@@ -71,6 +71,7 @@ replaceAtIndex index numb list =    let (x,_:y) = splitAt index list
 -- Output:  A huffman tree with the most frequent chars high up and less frequent further down
 
 maketree :: [(Integer, Char)] -> Htree
+maketree [leaf] = wtreeToHtree (makeWtree (generateWtreeList ([leaf]++[(0,'\0')]) []))
 maketree list = wtreeToHtree ( makeWtree (generateWtreeList list []))
 
 
