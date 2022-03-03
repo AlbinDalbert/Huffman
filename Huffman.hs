@@ -1,13 +1,13 @@
 {-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-module Huffman (statistics, maketree, encode, decode, Htree) where
+module Huffman (statistics, maketree, encode, decode, Htree (Leaf, Branch)) where
 import Data.List (find, delete, sortBy, sortOn)
 import Data.Maybe (isJust, fromJust)
 import GHC.Char ( chr )
 import Data.Tree ()
 
-data Htree = Leaf {c :: Char} | Branch {h0 :: Htree, h1 :: Htree} deriving (Show, Read, Eq)
-data Wtree = L {weight :: Integer, cha :: Char} | B {weight :: Integer, t1 :: Wtree, t2 :: Wtree}
+data Htree = Leaf {c :: Char} | Branch {h0 :: Htree, h1 :: Htree} deriving (Show, Eq, Ord)
+data Wtree = L {weight :: Integer, cha :: Char} | B {weight :: Integer, t1 :: Wtree, t2 :: Wtree} deriving (Show, Eq, Ord)
 
 type BitTableElem = (Char, [Integer])
 
@@ -18,7 +18,7 @@ type BitTableElem = (Char, [Integer])
 
 encode :: String -> (Htree , [Integer])
 encode str =    let tree = maketree (statistics str)
-                in (tree, makeBitSequence tree (makeBitTable tree []) str [])
+                in (tree, makeBitSequence (makeBitTable tree []) str [])
 
 
 -- Makes a bit table with each chars bit sequence.
@@ -28,9 +28,9 @@ makeBitTable (Branch t1 t2) bits = makeBitTable t1 (bits ++ [0]) ++ makeBitTable
 
 
 -- generates the bit sequence from the huffman tree and bitTable
-makeBitSequence :: Htree -> [BitTableElem]-> String -> [Integer] -> [Integer]
-makeBitSequence _ _ [] bitSeq = bitSeq
-makeBitSequence tree bitTable (c:rest) bitSeq = makeBitSequence tree bitTable rest (bitSeq ++ getBitsForChar c bitTable)
+makeBitSequence :: [BitTableElem] -> String -> [Integer] -> [Integer]
+makeBitSequence _ [] bitSeq = bitSeq
+makeBitSequence bitTable (c:rest) bitSeq = makeBitSequence bitTable rest (bitSeq ++ getBitsForChar c bitTable)
 
 
 -- returns the bit sequence for the given char
@@ -131,7 +131,6 @@ decodeTraverse root (Leaf c) bits newStr = decodeTraverse root root bits (newStr
 decodeTraverse root (Branch t0 t1) (b:bits) newStr =  if b == 0
                                                     then decodeTraverse root t0 bits newStr
                                                     else decodeTraverse root t1 bits newStr
-
 
 
 -- Tests -------------------------------------------------------------------------------------
