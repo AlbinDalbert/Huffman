@@ -148,5 +148,12 @@ testMakeTree :: Bool
 testMakeTree = show (maketree (statistics "Huffman")) == "Branch {h0 = Branch {h0 = Leaf {c = 'H'}, h1 = Leaf {c = 'f'}}, h1 = Branch {h0 = Branch {h0 = Leaf {c = 'u'}, h1 = Leaf {c = 'n'}}, h1 = Branch {h0 = Leaf {c = 'm'}, h1 = Leaf {c = 'a'}}}}"
 
 
+testEncode :: Bool 
+testEncode =    let (_, bitList) = encode "Huffman"
+                in bitList == [0,0,1,0,0,0,1,0,1,1,1,0,1,1,1,1,0,1]
+
+-- their is no test for only decode as making one would still need to do all the work
+-- encode does. And because encode has a unique test, one could
+-- deduct that decode is wrong if testEncode returns true and this test returns false.
 testEncodeAndDecode :: Bool
 testEncodeAndDecode = uncurry decode (encode "Huffman") == "Huffman"
